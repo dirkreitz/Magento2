@@ -57,6 +57,12 @@ ADD apache_default /etc/apache2/sites-available/000-default.conf
 RUN a2enmod rewrite headers
 RUN service apache2 restart
 
+# For openssh
+#RUN mkdir -p /var/run/sshd
+#RUN echo "root:admin123" | chpasswd
+#RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+#RUN sed -i '$a\PermitRootLogin yes' /etc/ssh/ssh_config
+
 # Cleanup
 RUN rm -rf /usr/src/*
 
@@ -68,4 +74,4 @@ RUN chmod o+w /app/app/etc
 RUN cd /app && /usr/local/bin/php -r "readfile('https://getcomposer.org/installer');" | /usr/local/bin/php
 RUN cd /app && /usr/local/bin/php composer.phar install
 RUN mkdir -p /app && rm -fr /var/www/html && ln -s /app /var/www/html
-EXPOSE 80 3306
+EXPOSE 80 3306 22
