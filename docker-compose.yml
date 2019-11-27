@@ -34,7 +34,7 @@ services:
   mysql:
     build:
       context: "./bin/${DATABASE}"
-    container_name: '5.7-mysql'
+    container_name: 'dbsrv'
     restart: 'always'
     ports:
       - "${HOST_MACHINE_MYSQL_PORT}:3306"
@@ -70,7 +70,19 @@ services:
       - type: volume
         source: redis-db
         target: /bitnami/redis/data
-
+  pma:
+    image: phpmyadmin/phpmyadmin
+    container_name: 'pma'
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: "$MYSQL_ROOT_PASSWORD"
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - magento2
 volumes:
   app-data:
   app-db:
