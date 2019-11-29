@@ -56,6 +56,7 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
   redis:
+    hostname: redis
     container_name: 'redis'
     image: bitnami/redis:latest
     ports:
