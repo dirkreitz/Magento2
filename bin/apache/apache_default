@@ -1,3 +1,5 @@
+Listen 8080
+
 <VirtualHost *:80>
         ServerAdmin webmaster@localhost
 
@@ -35,4 +37,9 @@
 	#  channel.
 	SetEnvIf x-forwarded-proto https HTTPS=on
 
+</VirtualHost>
+
+<VirtualHost *:8080>
+        ProxyPass "/" "http://esearch:9200/"
+        ProxyPassReverse "/" "http://esearch:9200/"
 </VirtualHost>

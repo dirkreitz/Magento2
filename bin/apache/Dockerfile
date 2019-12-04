@@ -54,7 +54,7 @@ RUN apt-get -y update && \
 ADD apache_default /etc/apache2/sites-available/000-default.conf
 
 # Enable apache modules
-RUN a2enmod rewrite headers
+RUN a2enmod rewrite headers proxy_http
 RUN service apache2 restart
 
 # For openssh
@@ -74,4 +74,7 @@ RUN chmod o+w /app/app/etc
 RUN cd /app && /usr/local/bin/php -r "readfile('https://getcomposer.org/installer');" | /usr/local/bin/php
 RUN cd /app && /usr/local/bin/php composer.phar install
 RUN mkdir -p /app && rm -fr /var/www/html && ln -s /app /var/www/html
-EXPOSE 80 3306 22
+RUN adduser --disabled-password --ingroup www-data --gecos '' magento
+RUN echo "magento:flensit" | chpasswd
+RUN cd /app && chown -R magento:www-data ./
+EXPOSE 80 8080 3306 22

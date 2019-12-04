@@ -1,1 +1,1 @@
-FROM varnish:6.2
+FROM varnish:latest
