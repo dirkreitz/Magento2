@@ -11,5 +11,3 @@ RUN apt-get -y update --fix-missing && \
     apt-get --no-install-recommends install -y apt-utils && \
     rm -rf /var/lib/apt/lists/*
 
-RUN apt-get -y update && \
-    apt-get -y --no-install-recommends install mc

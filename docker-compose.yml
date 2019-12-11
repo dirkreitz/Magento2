@@ -8,13 +8,11 @@ services:
   websrv:
     hostname: websrv
     build:
-      context: "./bin/${WEBSERVER}"
+      context: "./bin/apache"
     container_name: 'websrv'
     restart: 'always'
     ports:
-      - "${HOST_MACHINE_UNSECURE_HOST_PORT}:80"
-      - "${HOST_MACHINE_SECURE_HOST_PORT}:443"
-      - "222:22"
+      - "8080:8080"
     links:
       - mysql
       - redis
@@ -33,6 +31,20 @@ services:
     depends_on:
       - mysql
       - redis
+
+  sslsrv:
+    hostname: sslsrv
+    build:
+      context: "./bin/sslsrv"
+    container_name: sslsrv
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - magento2
+    depends_on:
+      - websrv
+      - varnish
 
   mysql:
     hostname: dbsrv
@@ -112,17 +124,23 @@ services:
       context: "./bin/varnish"
     container_name: 'varnish'
     ports:
-      - "1080:80"
+      - "6081:6081"
+      - "6082:6082"
     restart: 'always'
-    environment:
-      - SINGLE=varnish
-      - VARNISH_OPTS=-n /var/lib/varnish -T :6082
     networks:
       - magento2
     volumes:
-      - type: volume
-        source: var-data
-        target: /var/lib/varnish
+      - type: bind
+        source: ./conf/etc/varnish/default_magento.vcl
+        target: /etc/varnish/default.vcl
+      - type: bind
+        source: ./conf/etc/varnish/varnish
+        target: /etc/default/varnish
+      - type: bind
+        source: ./conf/etc/varnish/supervisord
+        target: /etc/supervisor/conf.d/supervisord.conf
+    depends_on:
+      - websrv
 
 volumes:
   app-data:
@@ -130,8 +148,8 @@ volumes:
   app-log:
   redis-db:
   es-db:
-  var-data:
-    driver: local
-    driver_opts:
-      type: tmpfs
-      device: tmpfs
+#  var-data:
+#    driver: local
+#    driver_opts:
+#      type: tmpfs
+#      device: tmpfs

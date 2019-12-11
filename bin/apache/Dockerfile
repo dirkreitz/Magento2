@@ -50,6 +50,10 @@ RUN apt-get -y update && \
     docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
     docker-php-ext-install -j$(nproc) gd
 
+# change apache default behavior
+RUN sed -i "s/None/all/g" /etc/apache2/apache2.conf && \
+    sed -i "s/80/8080/g" /etc/apache2/ports.conf
+    
 # config to enable .htaccess
 ADD apache_default /etc/apache2/sites-available/000-default.conf
 
@@ -77,4 +81,3 @@ RUN mkdir -p /app && rm -fr /var/www/html && ln -s /app /var/www/html
 RUN adduser --disabled-password --ingroup www-data --gecos '' magento
 RUN echo "magento:flensit" | chpasswd
 RUN cd /app && chown -R magento:www-data ./
-EXPOSE 80 8080 3306 22
