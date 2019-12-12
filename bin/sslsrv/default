@@ -20,6 +20,7 @@ server {
         ssl_prefer_server_ciphers on;
     location / {
     include /etc/nginx/proxy_params;
+    proxy_set_header X-Forwarded-Port 443;
     proxy_pass http://varnish:6081;
     }
 }
